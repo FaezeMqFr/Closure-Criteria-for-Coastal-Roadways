@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Closure Criteria for Coastal Roadways under Flooding Conditions - Vehicle Stability Analysis  Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 10px;
+            min-height: 100vh;
+            color: #1a202c;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            overflow: hidden;
+        }
+        /* Header */
+        .header {
+            background: #ffffff;
+            padding: 20px;
+            color: #2d3748;
+            text-align: center;
+            border-bottom: 3px solid #e2e8f0;
+        }
+        .header h1 {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+            color: #1a202c;
+        }
+        .header .subtitle {
+            font-size: 0.75em;
+            color: #718096;
+            font-weight: 400;
+        }
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            background: #fafbfc;
+        }
+        /* Control Grid */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .controls-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 15px;
+            padding-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+        .card.compact {
+            padding: 10px;
+            padding-bottom: 8px;
+        }
+        .card.compact .card-header {
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+        }
+        .card.compact .card-icon {
+            font-size: 0.9em;
+        }
+        .card.compact .card-title {
+            font-size: 0.8em;
+        }
+        .card.compact .input-group {
+            margin-bottom: 6px;
+        }
+        .card.compact .input-group:last-child {
+            margin-bottom: 0;
+        }
+        .card.compact .input-group label {
+            font-size: 0.7em;
+            margin-bottom: 2px;
+        }
+        .card.compact .input-group select {
+            padding: 5px 10px;
+            font-size: 0.75em;
+        }
+        .card.compact .checkbox-group {
+            margin-bottom: 3px;
+            padding: 3px;
+        }
+        .card.compact .checkbox-group:last-child {
+            margin-bottom: 0;
+        }
+        .card.compact .checkbox-group label {
+            font-size: 0.7em;
+        }
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            border-color: #cbd5e0;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .card-icon {
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        .card-title {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        /* Input Groups */
+        .input-group {
+            margin-bottom: 8px;
+        }
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.75em;
+        }
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #4a5568;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(74, 85, 104, 0.1);
+        }
+        .input-group input:hover,
+        .input-group select:hover {
+            border-color: #cbd5e0;
+        }
+        /* Checkbox Groups */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 6px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+        .checkbox-group:hover {
+            background: #f7fafc;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #4a5568;
+        }
+        .checkbox-group label {
+            margin: 0;
+            font-weight: 400;
+            cursor: pointer;
+            user-select: none;
+            color: #2d3748;
+        }
+        /* Status Indicator */
+        .status-indicator {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .status-safe {
+            background: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .status-caution {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+        .status-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        /* Graph Container */
+        .graph-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        .graph-title {
+            font-size: 1em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #mainGraph {
+            width: 100%;
+            min-height: 550px;
+        }
+        /* Legend Info */
+        .legend-card {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+        }
+        .legend-card h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .legend-color {
+            width: 40px;
+            height: 28px;
+            margin-right: 12px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e0;
+            flex-shrink: 0;
+        }
+        .legend-text {
+            font-size: 0.7em;
+            color: #4a5568;
+        }
+        .legend-text strong {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .main-layout {
+                grid-template-columns: 300px 1fr !important;
+            }
+        }
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 1.1em;
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 12px;
+            }
+        }
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: #718096;
+            font-size: 0.65em;
+            border-top: 1px solid #e2e8f0;
+        }
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            animation: fadeIn 0.5s ease;
+        }
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(74, 85, 104, 0.3);
+            border-radius: 50%;
+            border-top-color: #4a5568;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Closure Criteria for Coastal Roadways under Flooding Conditions</h1>
+            <p class="subtitle"> <strong style="color: #2d3748;">🌊🚧 Road Clouser Analysis  Dashboard🌊🚧 </strong></p>
+            <p class="subtitle"> ⚠️Remember: Turn Around, Don't Drown⚠️ </p>
+            <p style="margin-top: 8px; font-size: 0.65em; color: #718096; font-style: italic;">
+                Based on research by Maghsoodifar et al. (2025), Coastal Hydrology lab, The University of Alabama
+            </p>
+        </div>
+        <div class="main-content">
+            <div class="main-layout">
+                <!-- Left Column: Control Cards -->
+                <div class="controls-column">
+                    <!-- Current Conditions Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">📍</span>
+                            <h3 class="card-title">Current Conditions</h3>
+                        </div>
+                        <div class="input-group">
+                            <label for="depthInput">Water Depth (meters)</label>
+                            <input type="number" id="depthInput" value="0.13" step="0.01" min="0" max="0.7" placeholder="Enter depth...">
+                        </div>
+                        <div class="input-group">
+                            <label for="velocityInput">Water Velocity (m/s)</label>
+                            <input type="number" id="velocityInput" value="1.0" step="0.1" min="0" max="4" placeholder="Enter velocity...">
+                        </div>
+                        <div id="statusIndicator" class="status-indicator"></div>
+                    </div>
+
+                    <!-- Vehicle Selection Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">🚗</span>
+                            <h3 class="card-title">Vehicle Selection</h3>
+                        </div>
+                        <div class="input-group">
+                            <label for="carCategory">Vehicle Category</label>
+                            <select id="carCategory">
+                                <option value="none">-- Select Category --</option>
+                                <option value="general">General Categories (Max Safe Depths)</option>
+                                <option value="small">Small/Compact Cars</option>
+                                <option value="sedan">Sedan/Medium Cars</option>
+                                <option value="suv">SUV/Crossover</option>
+                                <option value="large">Large SUV/Pickup</option>
+                                <option value="4wd">4WD/Off-road</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="carModel">Vehicle Model</label>
+                            <select id="carModel">
+                                <option value="none">-- Select Model --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Important Information Card -->
+                    <div class="card" style="background: #f7fafc; border-color: #cbd5e0;">
+                        <div style="font-size: 0.65em; color: #4a5568; line-height: 1.5;">
+                            <p style="margin-bottom: 8px;"><strong style="color: #2d3748;">⚠️ Important:</strong> This tool provides guidance based on research data. Always exercise extreme caution in flood conditions.</p>
+                            <p style="margin-bottom: 10px; padding: 8px; background: #fff3cd; border-left: 3px solid #ffc107; border-radius: 4px; font-size: 0.95em;">
+                                This dashboard is provided for research, education, and planning support purposes only.
+                                It does not replace professional engineering judgement, roadway safety evaluation, or emergency management protocols. The authors assume no liability for decisions or actions taken based on the outputs of this tool.
+                            </p>
+                            <div style="padding-top: 10px; border-top: 1px solid #cbd5e0;">
+                                <p style="font-size: 0.9em;">
+                                    <strong>Research Reference:</strong><br>
+                                    Maghsoodifar, F., Radfar, S., Moftakhari, H., & Moradkhani, H. (2025).
+                                    Establishing closure criteria for coastal roadways under flooding conditions.
+                                    <em>International Journal of Disaster Risk Reduction</em>, 105805.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Display Options, Graph and Legend -->
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Display Options Card (Full Width) -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-icon">📑</span>
+                            <h3 class="card-title">Guidlines</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                            <div class="checkbox-group" style="padding: 4px;">
+                                <input type="checkbox" id="showCrossHair" checked style="width: 16px; height: 16px; margin-right: 8px;">
+                                <label for="showCrossHair" style="font-size: 0.7em;">Show Position Crosshair</label>
+                            </div>
+                            <div class="checkbox-group" style="padding: 4px;">
+                                <input type="checkbox" id="showAR" checked style="width: 16px; height: 16px; margin-right: 8px;">
+                                <label for="showAR" style="font-size: 0.7em;">AR&R Lines (Small, Large, 4WD)</label>
+                            </div>
+                            <div class="checkbox-group" style="padding: 4px;">
+                                <input type="checkbox" id="showAustroads" checked style="width: 16px; height: 16px; margin-right: 8px;">
+                                <label for="showAustroads" style="font-size: 0.7em;">Austroads 2008 Standard</label>
+                            </div>
+                            <div class="checkbox-group" style="padding: 4px;">
+                                <input type="checkbox" id="showNWS" checked style="width: 16px; height: 16px; margin-right: 8px;">
+                                <label for="showNWS" style="font-size: 0.7em;">NWS Sweep Thresholds</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Graph and Legend Row -->
+                    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 15px;">
+                        <!-- Graph Card -->
+                        <div class="graph-card">
+                            <h2 class="graph-title">Vehicle Stability Analysis</h2>
+                            <div id="mainGraph"></div>
+                        </div>
+
+                        <!-- Legend Card -->
+                        <div class="legend-card">
+                            <h4> Safety Zones</h4>
+                            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: rgba(144, 238, 144, 0.6);"></div>
+                                    <div class="legend-text">
+                                        <strong>Low Hazard Zone</strong>
+                                        Safe for most vehicles
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: rgba(255, 255, 153, 0.7);"></div>
+                                    <div class="legend-text">
+                                        <strong> Medium Hazard Zone</strong>
+                                        Proceed with care
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: rgba(255, 204, 153, 0.7);"></div>
+                                    <div class="legend-text">
+                                        <strong>High Hazard Zone</strong>
+                                        Dangerous conditions (High Caution)
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: rgba(255, 182, 193, 0.7);"></div>
+                                    <div class="legend-text">
+                                        <strong>Extreme Hazard Zone</strong>
+                                        Do not attempt
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="referenceLinesContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Data from CSV files representing safety zone boundaries
+        const lowData = {
+            x: [0, 0.58667, 0.96381],
+            y: [0.10276, 0.10456, 0.00901]
+        };
+        const medData = {
+            x: [0, 0.14667, 0.29857, 0.40857, 0.56048, 0.74381, 0.82238, 0.91667, 1.07905, 1.23095, 1.39857, 1.5819, 1.79143, 1.79143, 2.64524, 2.99095],
+            y: [0.27763, 0.27583, 0.27583, 0.27042, 0.26682, 0.25961, 0.256, 0.25239, 0.24338, 0.23076, 0.21814, 0.20192, 0.18028, 0.08113, 0.07031, 0.01082]
+        };
+        const highData = {
+            x: [0, 1.62905, 1.63952, 1.72333, 1.88048, 2.03238, 2.20524, 2.35714, 2.49857, 2.64, 2.84952, 3.03286, 3.29476],
+            y: [0.40023, 0.40203, 0.37859, 0.36777, 0.34794, 0.32631, 0.29746, 0.26682, 0.23977, 0.21273, 0.17848, 0.15144, 0.12439]
+        };
+        // Car models database organized by category
+        const carDatabase = {
+            general: [
+                { name: 'Sedan/Compact, Minivan', clearance: 0.119 },
+                { name: 'SUV (Compact)', clearance: 0.155 },
+                { name: 'SUV (Midsize/Luxury)', clearance: 0.178 },
+                { name: 'Bus (City/Coach)', clearance: 0.249 },
+                { name: 'Pickup Truck (Fullsize)', clearance: 0.266 },
+                { name: '4WD', clearance: 0.28 }
+            ],
+            small: [
+                { name: 'Toyota Yaris', clearance: 0.14 },
+                { name: 'Honda Fit', clearance: 0.13 },
+                { name: 'Ford Fiesta', clearance: 0.14 },
+                { name: 'Chevrolet Spark', clearance: 0.15 },
+                { name: 'Nissan Micra', clearance: 0.15 },
+                { name: 'Mazda 2', clearance: 0.14 },
+                { name: 'Volkswagen Polo', clearance: 0.14 }
+            ],
+            sedan: [
+                { name: 'Toyota Camry', clearance: 0.16 },
+                { name: 'Honda Accord', clearance: 0.17 },
+                { name: 'BMW 3 Series', clearance: 0.14 },
+                { name: 'Mercedes C-Class', clearance: 0.11 },
+                { name: 'Audi A4', clearance: 0.12 },
+                { name: 'Hyundai Sonata', clearance: 0.15 },
+                { name: 'Nissan Altima', clearance: 0.14 }
+            ],
+            suv: [
+                { name: 'Toyota RAV4', clearance: 0.20 },
+                { name: 'Honda CR-V', clearance: 0.20 },
+                { name: 'Mazda CX-5', clearance: 0.21 },
+                { name: 'Nissan Rogue', clearance: 0.21 },
+                { name: 'Subaru Forester', clearance: 0.22 },
+                { name: 'Hyundai Tucson', clearance: 0.17 },
+                { name: 'Volkswagen Tiguan', clearance: 0.20 }
+            ],
+            large: [
+                { name: 'Toyota Land Cruiser', clearance: 0.23 },
+                { name: 'Chevrolet Tahoe', clearance: 0.20 },
+                { name: 'Ford Explorer', clearance: 0.22 },
+                { name: 'GMC Yukon', clearance: 0.20 },
+                { name: 'Toyota 4Runner', clearance: 0.23 },
+                { name: 'Nissan Patrol', clearance: 0.27 },
+                { name: 'Land Rover Discovery', clearance: 0.28 }
+            ],
+            '4wd': [
+                { name: 'Jeep Wrangler', clearance: 0.27 },
+                { name: 'Toyota Tacoma', clearance: 0.24 },
+                { name: 'Ford F-150 Raptor', clearance: 0.30 },
+                { name: 'Chevrolet Colorado', clearance: 0.22 },
+                { name: 'Ram 1500', clearance: 0.25 },
+                { name: 'Ford Bronco', clearance: 0.29 },
+                { name: 'Land Rover Defender', clearance: 0.29 }
+            ]
+        };
+        // State management
+        let currentDepth = 0.2;
+        let currentVelocity = 1.0;
+        let selectedCar = null;
+        // Initialize
+        document.getElementById('carCategory').addEventListener('change', updateCarModels);
+        document.getElementById('carModel').addEventListener('change', selectCarModel);
+        document.getElementById('depthInput').addEventListener('input', updateFromInput);
+        document.getElementById('velocityInput').addEventListener('input', updateFromInput);
+        // Add event listeners for checkboxes
+        ['showCrossHair', 'showAR', 'showAustroads', 'showNWS'].forEach(id => {
+            document.getElementById(id).addEventListener('change', updateGraphs);
+        });
+        function updateCarModels() {
+            const category = document.getElementById('carCategory').value;
+            const modelSelect = document.getElementById('carModel');
+            modelSelect.innerHTML = '<option value="none">-- Select Model --</option>';
+            if (category !== 'none' && carDatabase[category]) {
+                carDatabase[category].forEach(car => {
+                    const option = document.createElement('option');
+                    option.value = JSON.stringify(car);
+                    option.textContent = `${car.name} (${car.clearance}m)`;
+                    modelSelect.appendChild(option);
+                });
+            }
+            selectedCar = null;
+            updateGraphs();
+        }
+        function selectCarModel() {
+            const modelValue = document.getElementById('carModel').value;
+            if (modelValue !== 'none') {
+                selectedCar = JSON.parse(modelValue);
+            } else {
+                selectedCar = null;
+            }
+            updateGraphs();
+            updateStatusIndicator();
+        }
+        function updateFromInput() {
+            currentDepth = parseFloat(document.getElementById('depthInput').value);
+            currentVelocity = parseFloat(document.getElementById('velocityInput').value);
+            updateGraphs();
+            updateStatusIndicator();
+        }
+        function interpolateZoneBoundary(velocity, xData, yData) {
+            // Interpolate the depth boundary at a given velocity
+            // If velocity is beyond data range, return the edge value
+            if (velocity <= xData[0]) return yData[0];
+            if (velocity >= xData[xData.length - 1]) return yData[yData.length - 1];
+            // Find the two points to interpolate between
+            for (let i = 0; i < xData.length - 1; i++) {
+                if (velocity >= xData[i] && velocity <= xData[i + 1]) {
+                    const ratio = (velocity - xData[i]) / (xData[i + 1] - xData[i]);
+                    return yData[i] + ratio * (yData[i + 1] - yData[i]);
+                }
+            }
+            return yData[yData.length - 1];
+        }
+        function getSafetyZone(depth, velocity) {
+            // Determine which safety zone the current position is in
+            // Based on actual CSV data boundaries
+            const dv = depth * velocity; // Depth × Velocity product (key stability metric)
+            // Get interpolated boundaries at current velocity
+            const lowBoundary = interpolateZoneBoundary(velocity, lowData.x, lowData.y);
+            const medBoundary = interpolateZoneBoundary(velocity, medData.x, medData.y);
+            const highBoundary = interpolateZoneBoundary(velocity, highData.x, highData.y);
+            // Determine zone based on position relative to boundaries
+            if (depth > highBoundary) {
+                return { zone: 'extreme', reason: 'above high boundary' };
+            } else if (depth > medBoundary) {
+                return { zone: 'high', reason: 'above medium boundary' };
+            } else if (depth > lowBoundary) {
+                return { zone: 'medium', reason: 'above low boundary' };
+            } else {
+                return { zone: 'low', reason: 'safe' };
+            }
+        }
+        function updateStatusIndicator() {
+            const indicator = document.getElementById('statusIndicator');
+            const dv = currentDepth * currentVelocity;
+            const safetyAssessment = getSafetyZone(currentDepth, currentVelocity);
+            const safetyZone = safetyAssessment.zone;
+            const zoneReason = safetyAssessment.reason;
+            let status, className, message, details;
+            // Check if a specific car is selected
+            if (selectedCar) {
+                const carName = selectedCar.name;
+                const carClearance = selectedCar.clearance;
+                // CRITICAL: Check if current depth exceeds vehicle clearance
+                if (currentDepth >= carClearance) {
+                    status = 'CRITICAL DANGER';
+                    className = 'status-danger';
+                    message = `⛔ DO NOT PROCEED - Water depth (${currentDepth.toFixed(3)}m) exceeds ${carName} clearance (${carClearance}m)!`;
+                    details = 'Your vehicle will be submerged. Turn around immediately!';
+                } else {
+                    // Check against appropriate AR&R threshold based on vehicle type
+                    const vehicleName = carName.toLowerCase();
+                    let thresholdExceeded = false;
+                    let thresholdName = '';
+                    // Determine which AR&R line to check against
+                    if (vehicleName.includes('4wd') || vehicleName.includes('wrangler') ||
+                        vehicleName.includes('raptor') || vehicleName.includes('bronco') ||
+                        vehicleName.includes('defender') || carClearance >= 0.25) {
+                        // Check against AR&R 4WD threshold
+                        const arr4WD_v = [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3];
+                        const arr4WD_d = [0.5, 0.5, 0.5, 0.463213, 0.447715, 0.430538, 0.407125, 0.386115, 0.370183, 0.360046, 0.347746, 0.33183, 0.31376, 0.300764, 0.2];
+                        thresholdExceeded = isAboveThreshold(currentVelocity, currentDepth, arr4WD_v, arr4WD_d);
+                        thresholdName = 'AR&R 4WD';
+                    } else if (vehicleName.includes('land cruiser') || vehicleName.includes('tahoe') ||
+                               vehicleName.includes('explorer') || vehicleName.includes('yukon') ||
+                               vehicleName.includes('patrol') || vehicleName.includes('discovery') ||
+                               carClearance >= 0.20) {
+                        // Check against AR&R Large Car threshold
+                        const arrL_v = [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3];
+                        const arrL_d = [0.4, 0.4, 0.4, 0.363213, 0.347715, 0.330538, 0.307125, 0.286115, 0.270183, 0.260046, 0.247746, 0.23183, 0.21376, 0.200764, 0.1];
+                        thresholdExceeded = isAboveThreshold(currentVelocity, currentDepth, arrL_v, arrL_d);
+                        thresholdName = 'AR&R Large Car';
+                    } else {
+                        // Check against AR&R Small Car threshold
+                        const arrS_v = [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3];
+                        const arrS_d = [0.3, 0.3, 0.3, 0.263213, 0.247715, 0.230538, 0.207125, 0.186115, 0.170183, 0.160046, 0.147746, 0.13183, 0.11376, 0.100764, 0];
+                        thresholdExceeded = isAboveThreshold(currentVelocity, currentDepth, arrS_v, arrS_d);
+                        thresholdName = 'AR&R Small Car';
+                    }
+                    // Now combine threshold check with safety zone assessment
+                    // Priority: AR&R threshold > Safety zone > Clearance check
+                    if (thresholdExceeded) {
+                        status = 'UNSAFE';
+                        className = 'status-danger';
+                        message = `⚠️ UNSAFE for ${carName}`;
+                        details = `Conditions exceed ${thresholdName} safety threshold. Vehicle instability likely. Do not attempt crossing.`;
+                    } else if (safetyZone === 'extreme') {
+                        // In extreme hazard zone even if below clearance and threshold
+                        status = 'EXTREME DANGER';
+                        className = 'status-danger';
+                        message = `⛔ EXTREME DANGER for ${carName}`;
+                        details = `Position in extreme hazard zone (red). Depth ${currentDepth.toFixed(2)}m with velocity ${currentVelocity.toFixed(1)}m/s creates critical risk. Turn around immediately!`;
+                    } else if (safetyZone === 'high') {
+                        // In high caution zone (orange)
+                        status = 'HIGH RISK';
+                        className = 'status-danger';
+                        message = `⚠️ HIGH RISK for ${carName}`;
+                        details = `Position in high caution zone. Depth ${currentDepth.toFixed(2)}m with velocity ${currentVelocity.toFixed(1)}m/s creates dangerous conditions. Avoid crossing.`;
+                    } else if (safetyZone === 'medium') {
+                        // In medium caution zone (yellow)
+                        const clearanceMargin = ((carClearance - currentDepth) / carClearance * 100).toFixed(0);
+                        status = 'MODERATE RISK';
+                        className = 'status-caution';
+                        message = `⚠️ MODERATE RISK for ${carName}`;
+                        details = `Position in medium caution zone. Depth ${currentDepth.toFixed(2)}m (${clearanceMargin}% clearance margin) with velocity ${currentVelocity.toFixed(1)}m/s. Proceed with extreme caution if necessary.`;
+                    } else {
+                        // In low risk zone (green)
+                        const clearanceMargin = ((carClearance - currentDepth) / carClearance * 100).toFixed(0);
+                        status = 'RELATIVELY SAFE';
+                        className = 'status-safe';
+                        message = `✓ Relatively safe for ${carName}`;
+                        details = `Position in low risk zone. Depth ${currentDepth.toFixed(2)}m (${clearanceMargin}% clearance margin), velocity ${currentVelocity.toFixed(1)}m/s, D×V = ${dv.toFixed(2)}. Still proceed with caution.`;
+                    }
+                }
+            } else {
+                // No car selected - general assessment based on depth, velocity, and safety zones
+                if (safetyZone === 'extreme') {
+                    status = 'Extreme Danger';
+                    className = 'status-danger';
+                    message = '⛔ CRITICAL - Turn around, don\'t drown!';
+                    details = `Position in extreme hazard zone (red). D×V = ${dv.toFixed(2)}. Fatal risk for all vehicles.`;
+                } else if (safetyZone === 'high') {
+                    status = 'High Hazard';
+                    className = 'status-danger';
+                    message = '⛔ Do not attempt crossing';
+                    details = `Position in high caution zone (orange). D×V = ${dv.toFixed(2)}. Dangerous for most vehicles.`;
+                } else if (safetyZone === 'medium') {
+                    status = 'Moderate Risk';
+                    className = 'status-caution';
+                    message = '⚠️ Proceed with extreme caution';
+                    details = `Position in medium caution zone (yellow). D×V = ${dv.toFixed(2)}. Velocity creates instability risk.`;
+                } else {
+                    status = 'Low Risk';
+                    className = 'status-safe';
+                    message = '✓ Relatively safe conditions';
+                    details = `Position in low risk zone (green). D×V = ${dv.toFixed(2)}. Always drive slowly through water.`;
+                }
+            }
+            indicator.className = `status-indicator ${className}`;
+            indicator.innerHTML = `
+                <strong style="font-size: 1em;">${status}</strong><br>
+                ${message}<br>
+                <small style="font-size: 0.8em; margin-top: 5px; display: block;">${details}</small>
+            `;
+        }
+        // Helper function to check if a point is above a threshold curve
+        function isAboveThreshold(velocity, depth, thresholdV, thresholdD) {
+            // Linear interpolation to find threshold depth at current velocity
+            for (let i = 0; i < thresholdV.length - 1; i++) {
+                if (velocity >= thresholdV[i] && velocity <= thresholdV[i + 1]) {
+                    // Interpolate threshold depth
+                    const ratio = (velocity - thresholdV[i]) / (thresholdV[i + 1] - thresholdV[i]);
+                    const interpolatedDepth = thresholdD[i] + ratio * (thresholdD[i + 1] - thresholdD[i]);
+                    return depth > interpolatedDepth;
+                }
+            }
+            // If velocity is beyond the curve, check against the last point
+            if (velocity > thresholdV[thresholdV.length - 1]) {
+                return depth > thresholdD[thresholdD.length - 1];
+            }
+            return false;
+        }
+        function createSafetyZones() {
+            // Define safety zones based on actual CSV data
+            const zones = [];
+            // Extend data to cover full velocity range (0-4 m/s)
+            const extendX = 4.0;
+            // Helper function to create smooth interpolation points
+            function smoothExtend(xData, yData, targetX, targetY, numPoints = 10) {
+                const lastX = xData[xData.length - 1];
+                const lastY = yData[yData.length - 1];
+                const extendedX = [...xData];
+                const extendedY = [...yData];
+                // Create smooth curve using multiple interpolation points
+                for (let i = 1; i <= numPoints; i++) {
+                    const t = i / numPoints;
+                    // Use smooth interpolation (ease-in-out cubic)
+                    const smoothT = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                    const newX = lastX + smoothT * (targetX - lastX);
+                    const newY = lastY + smoothT * (targetY - lastY);
+                    extendedX.push(newX);
+                    extendedY.push(newY);
+                }
+                return { x: extendedX, y: extendedY };
+            }
+            // Smooth extension for low zone to (1.0, 0)
+            const lowExtended = smoothExtend(lowData.x, lowData.y, 1.0, 0, 15);
+            // Smooth extension for medium zone to (3.0, 0)
+            const medExtended = smoothExtend(medData.x, medData.y, 3.0, 0, 20);
+            // Smooth extension for high zone
+            const highExtended = smoothExtend(highData.x, highData.y, extendX, 0.08, 15);
+            // Low risk zone (green) - from y=0 to low.csv boundary
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: [0, extendX],
+                y: [0, 0],
+                fill: 'tozeroy',
+                fillcolor: 'rgba(144, 238, 144, 0.5)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: [...lowExtended.x, extendX],
+                y: [...lowExtended.y, 0],
+                fill: 'tonexty',
+                fillcolor: 'rgba(144, 238, 144, 0.5)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            // Medium caution zone (yellow) - from low.csv to med.csv
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: [...lowExtended.x, extendX],
+                y: [...lowExtended.y, 0],
+                fill: 'tonexty',
+                fillcolor: 'rgba(255, 255, 153, 0.6)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: [...medExtended.x, extendX],
+                y: [...medExtended.y, 0],
+                fill: 'tonexty',
+                fillcolor: 'rgba(255, 255, 153, 0.6)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            // High caution zone (orange) - from med.csv to high.csv
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: [...medExtended.x, extendX],
+                y: [...medExtended.y, 0],
+                fill: 'tonexty',
+                fillcolor: 'rgba(255, 204, 153, 0.7)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: highExtended.x,
+                y: highExtended.y,
+                fill: 'tonexty',
+                fillcolor: 'rgba(255, 204, 153, 0.7)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            // Extreme hazard/Closed zone (red/pink) - above high.csv
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: highExtended.x,
+                y: highExtended.y,
+                fill: 'tonexty',
+                fillcolor: 'rgba(255, 182, 193, 0.7)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            zones.push({
+                type: 'scatter',
+                mode: 'none',
+                x: [0, extendX],
+                y: [0.7, 0.7],
+                fill: 'tonexty',
+                fillcolor: 'rgba(255, 182, 193, 0.7)',
+                showlegend: false,
+                hoverinfo: 'skip'
+            });
+            return zones;
+        }
+        function updateGraphs() {
+            const showCrossHair = document.getElementById('showCrossHair').checked;
+            const showAR = document.getElementById('showAR').checked;
+            const showAustroads = document.getElementById('showAustroads').checked;
+            const showNWS = document.getElementById('showNWS').checked;
+            createGraph('mainGraph', 'Depth vs Velocity Analysis', 0.6, showCrossHair, showAR, showAustroads, showNWS);
+            updateReferenceLinesLegend(showCrossHair, showAR, showAustroads, showNWS);
+        }
+        function updateReferenceLinesLegend(showCrossHair, showAR, showAustroads, showNWS) {
+            const container = document.getElementById('referenceLinesContainer');
+            let html = '';
+            // Only show the header and content if at least one option is enabled
+            if (showCrossHair || showAR || showAustroads || showNWS || selectedCar) {
+                html += '<h4 style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e2e8f0;">🔍 Reference Lines</h4>';
+                html += '<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">';
+                // Your Position
+                if (showCrossHair) {
+                    html += `
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <div style="width: 40px; height: 16px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                <div style="width: 12px; height: 12px; background: #4a5568; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1px #4a5568;"></div>
+                            </div>
+                            <span style="font-size: 0.8em; color: #2d3748;">Your Position</span>
+                        </div>
+                    `;
+                }
+                // Selected car clearance line
+                if (selectedCar) {
+                    html += `
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <div style="width: 40px; height: 4px; background: #e91e63; margin-right: 12px; border-radius: 2px;"></div>
+                            <span style="font-size: 0.8em; color: #2d3748;">${selectedCar.name}</span>
+                        </div>
+                    `;
+                }
+                // NWS Lines
+                if (showNWS) {
+                    html += `
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <div style="width: 40px; height: 3px; background: red; margin-right: 12px; border-radius: 2px;"></div>
+                            <span style="font-size: 0.8em; color: #2d3748;">NWS Sweep (Small Cars)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <svg width="40" height="3" style="margin-right: 12px;">
+                                <line x1="0" y1="1.5" x2="40" y2="1.5" stroke="red" stroke-width="3" stroke-dasharray="5,3"/>
+                            </svg>
+                            <span style="font-size: 0.8em; color: #2d3748;">NWS Sweep (Large Vehicles)</span>
+                        </div>
+                    `;
+                }
+                // Austroads
+                if (showAustroads) {
+                    html += `
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <svg width="40" height="3" style="margin-right: 12px;">
+                                <line x1="0" y1="1.5" x2="40" y2="1.5" stroke="#332FD0" stroke-width="3" stroke-dasharray="2,2"/>
+                            </svg>
+                            <span style="font-size: 0.8em; color: #2d3748;">Austroads 2008</span>
+                        </div>
+                    `;
+                }
+                // AR&R Lines
+                if (showAR) {
+                    html += `
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <svg width="40" height="3" style="margin-right: 12px;">
+                                <line x1="0" y1="1.5" x2="40" y2="1.5" stroke="#480032" stroke-width="3" stroke-dasharray="8,3"/>
+                            </svg>
+                            <span style="font-size: 0.8em; color: #2d3748;">AR&R 4WD Car</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <svg width="40" height="3" style="margin-right: 12px;">
+                                <line x1="0" y1="1.5" x2="40" y2="1.5" stroke="#480032" stroke-width="3" stroke-dasharray="2,2"/>
+                            </svg>
+                            <span style="font-size: 0.8em; color: #2d3748;">AR&R Large Car</span>
+                        </div>
+                        <div style="display: flex; align-items: center; padding: 8px;">
+                            <svg width="40" height="3" style="margin-right: 12px;">
+                                <line x1="0" y1="1.5" x2="40" y2="1.5" stroke="#480032" stroke-width="3" stroke-dasharray="5,3,2,3"/>
+                            </svg>
+                            <span style="font-size: 0.8em; color: #2d3748;">AR&R Small Car</span>
+                        </div>
+                    `;
+                }
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+        function createGraph(elementId, title, maxDepth, showCrossHair, showAR, showAustroads, showNWS) {
+            const traces = [];
+            // Add safety zones
+            traces.push(...createSafetyZones());
+            // AR&R Small Car - Exact data from research
+            if (showAR) {
+                traces.push({
+                    x: [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3],
+                    y: [0.3, 0.3, 0.3, 0.263213, 0.247715, 0.230538, 0.207125, 0.186115, 0.170183, 0.160046, 0.147746, 0.13183, 0.11376, 0.100764, 0],
+                    mode: 'lines',
+                    name: 'AR&R Small Car',
+                    line: { color: '#480032', width: 3, dash: 'dashdot' }
+                });
+            }
+            // AR&R Large Car - Exact data from research
+            if (showAR) {
+                traces.push({
+                    x: [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3],
+                    y: [0.4, 0.4, 0.4, 0.363213, 0.347715, 0.330538, 0.307125, 0.286115, 0.270183, 0.260046, 0.247746, 0.23183, 0.21376, 0.200764, 0.1],
+                    mode: 'lines',
+                    name: 'AR&R Large Car',
+                    line: { color: '#480032', width: 3, dash: 'dot' }
+                });
+            }
+            // AR&R 4WD Car - Exact data from research
+            if (showAR) {
+                traces.push({
+                    x: [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3],
+                    y: [0.5, 0.5, 0.5, 0.463213, 0.447715, 0.430538, 0.407125, 0.386115, 0.370183, 0.360046, 0.347746, 0.33183, 0.31376, 0.300764, 0.2],
+                    mode: 'lines',
+                    name: 'AR&R 4WD Car',
+                    line: { color: '#480032', width: 3, dash: 'dash' }
+                });
+            }
+            // Austroads 2008 - Exact data from research
+            if (showAustroads) {
+                traces.push({
+                    x: [0, 0.0775159, 0.168437, 0.270078, 0.345017, 0.425315, 0.511034, 0.583347, 0.661045, 0.728023, 0.803034, 0.870024, 0.939725, 1.01212, 1.07114, 1.1677, 1.25897, 1.37167, 1.4737, 1.55156, 1.6429, 1.7369, 1.82555, 1.91153, 1.97607, 2.02715, 2.09432, 2.16428, 2.25301, 2.32567, 2.39298],
+                    y: [0.3, 0.300905, 0.300452, 0.299095, 0.29638, 0.293213, 0.28733, 0.282805, 0.276923, 0.271946, 0.266516, 0.261086, 0.254299, 0.246606, 0.239367, 0.228054, 0.21448, 0.199548, 0.18371, 0.171493, 0.155656, 0.139819, 0.124434, 0.108597, 0.0950226, 0.0846154, 0.0723982, 0.0561086, 0.0375566, 0.0199095, 0.00271493],
+                    mode: 'lines',
+                    name: 'Austroads 2008',
+                    line: { color: '#332FD0', width: 3, dash: 'dot' }
+                });
+            }
+            // NWS Sweep Threshold - Small Cars (horizontal line)
+            if (showNWS) {
+                traces.push({
+                    x: [0, 4.0],
+                    y: [0.3048, 0.3048],
+                    mode: 'lines',
+                    name: 'NWS Sweep (Small Cars)',
+                    line: { color: 'red', width: 3 }
+                });
+                // NWS Sweep Threshold - Large SUVs, Vans & Trucks
+                traces.push({
+                    x: [0, 4.0],
+                    y: [0.4572, 0.4572],
+                    mode: 'lines',
+                    name: 'NWS Sweep (Large Vehicles)',
+                    line: { color: 'red', width: 3, dash: 'dash' }
+                });
+            }
+            // Selected car line
+            if (selectedCar) {
+                const clearance = selectedCar.clearance;
+                traces.push({
+                    x: [0, 4.0],
+                    y: [clearance, clearance],
+                    mode: 'lines',
+                    name: `${selectedCar.name}`,
+                    line: { color: '#e91e63', width: 4 }
+                });
+            }
+            // User position crosshair
+            if (showCrossHair && currentDepth <= maxDepth) {
+                traces.push({
+                    x: [0, 4.0],
+                    y: [currentDepth, currentDepth],
+                    mode: 'lines',
+                    name: 'Current Depth',
+                    line: { color: '#2c3e50', width: 2, dash: 'dash' },
+                    showlegend: false
+                });
+                traces.push({
+                    x: [currentVelocity, currentVelocity],
+                    y: [0, maxDepth],
+                    mode: 'lines',
+                    name: 'Current Velocity',
+                    line: { color: '#2c3e50', width: 2, dash: 'dash' },
+                    showlegend: false
+                });
+                traces.push({
+                    x: [currentVelocity],
+                    y: [currentDepth],
+                    mode: 'markers',
+                    name: 'Your Position',
+                    marker: {
+                        color: '#4a5568',
+                        size: 16,
+                        symbol: 'circle',
+                        line: { color: 'white', width: 3 }
+                    }
+                });
+            }
+            const layout = {
+                xaxis: {
+                    title: {
+                        text: 'Water Velocity (m/s)',
+                        font: { size: 14, family: 'Inter' }
+                    },
+                    range: [0, 4.0],
+                    gridcolor: '#e2e8f0',
+                    dtick: 0.5,
+                    showline: true,
+                    linecolor: '#cbd5e0'
+                },
+                yaxis: {
+                    title: {
+                        text: 'Water Depth (m)',
+                        font: { size: 14, family: 'Inter' }
+                    },
+                    range: [0, maxDepth],
+                    gridcolor: '#e2e8f0',
+                    dtick: 0.1,
+                    showline: true,
+                    linecolor: '#cbd5e0'
+                },
+                plot_bgcolor: '#fafafa',
+                paper_bgcolor: '#ffffff',
+                showlegend: false,
+                hovermode: 'closest',
+                height: 550,
+                margin: { l: 60, r: 40, t: 10, b: 40 },
+                autosize: true
+            };
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+                modeBarOrientation: 'v',
+                toImageButtonOptions: {
+                    format: 'png',
+                    filename: 'vehicle_stability_analysis',
+                    height: 600,
+                    width: 1000
+                }
+            };
+            Plotly.newPlot(elementId, traces, layout, config);
+        }
+        // Initialize graphs
+        updateGraphs();
+        updateStatusIndicator();
+    </script>
+</body>
+</html>
