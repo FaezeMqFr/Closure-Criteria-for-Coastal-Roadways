@@ -388,12 +388,15 @@
                             <label for="carCategory">Vehicle Category</label>
                             <select id="carCategory">
                                 <option value="none">-- Select Category --</option>
-                                <option value="general">General Categories (Max Safe Depths)</option>
-                                <option value="small">Small/Compact Cars</option>
-                                <option value="sedan">Sedan/Medium Cars</option>
-                                <option value="suv">SUV/Crossover</option>
-                                <option value="large">Large SUV/Pickup</option>
+                                <option value="sedan">Sedan/Compact</option>
+                                <option value="suv_compact">SUV (Compact)</option>
+                                <option value="suv_midsize">SUV (Midsize/Luxury)</option>
+                                <option value="pickup">Pickup Truck</option>
                                 <option value="4wd">4WD/Off-road</option>
+                                <option value="van_fullsize">Full-Size Vans</option>
+                                <option value="van_compact">Compact/Mini Vans</option>
+                                <option value="minivan">Minivan</option>
+                                <option value="bus">Bus (City/Coach)</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -516,58 +519,141 @@
         };
         // Car models database organized by category
         const carDatabase = {
-            general: [
-                { name: 'Sedan/Compact, Minivan', clearance: 0.119 },
-                { name: 'SUV (Compact)', clearance: 0.155 },
-                { name: 'SUV (Midsize/Luxury)', clearance: 0.178 },
-                { name: 'Bus (City/Coach)', clearance: 0.249 },
-                { name: 'Pickup Truck (Fullsize)', clearance: 0.266 },
-                { name: '4WD', clearance: 0.28 }
-            ],
-            small: [
-                { name: 'Toyota Yaris', clearance: 0.14 },
-                { name: 'Honda Fit', clearance: 0.13 },
-                { name: 'Ford Fiesta', clearance: 0.14 },
-                { name: 'Chevrolet Spark', clearance: 0.15 },
-                { name: 'Nissan Micra', clearance: 0.15 },
-                { name: 'Mazda 2', clearance: 0.14 },
-                { name: 'Volkswagen Polo', clearance: 0.14 }
-            ],
             sedan: [
-                { name: 'Toyota Camry', clearance: 0.16 },
-                { name: 'Honda Accord', clearance: 0.17 },
-                { name: 'BMW 3 Series', clearance: 0.14 },
-                { name: 'Mercedes C-Class', clearance: 0.11 },
-                { name: 'Audi A4', clearance: 0.12 },
-                { name: 'Hyundai Sonata', clearance: 0.15 },
-                { name: 'Nissan Altima', clearance: 0.14 }
+                { name: 'Audi A4', clearance: 0.122 },
+                { name: 'Audi A6', clearance: 0.124 },
+                { name: 'Audi A7', clearance: 0.127 },
+                { name: 'BMW 3 Series', clearance: 0.145 },
+                { name: 'BMW 5 Series', clearance: 0.160 },
+                { name: 'Ford Mustang', clearance: 0.1346 },
+                { name: 'Ford Fusion', clearance: 0.14 },
+                { name: 'Ford Focus', clearance: 0.119 },
+                { name: 'Honda Accord', clearance: 0.1473 },
+                { name: 'Honda Civic', clearance: 0.1702 },
+                { name: 'Hyundai Elantra', clearance: 0.140 },
+                { name: 'Hyundai Sonata', clearance: 0.135 },
+                { name: 'Mazda Mazda3 Hatchback', clearance: 0.1397 },
+                { name: 'Mazda Mazda3 Sedan', clearance: 0.1397 },
+                { name: 'Mercedes-Benz A-Class', clearance: 0.104 },
+                { name: 'Mercedes-Benz C-Class', clearance: 0.114 },
+                { name: 'Mercedes-Benz E-Class', clearance: 0.122 },
+                { name: 'Mercedes-Benz S-Class', clearance: 0.137 },
+                { name: 'Tesla Model 3', clearance: 0.14 },
+                { name: 'Tesla Model S', clearance: 0.117 },
+                { name: 'Toyota Camry', clearance: 0.145 },
+                { name: 'Toyota Corolla', clearance: 0.135 },
+                { name: 'Toyota Crown', clearance: 0.147 },
+                { name: 'Volkswagen Jetta', clearance: 0.132 },
+                { name: 'Volkswagen Arteon', clearance: 0.137 }
             ],
-            suv: [
-                { name: 'Toyota RAV4', clearance: 0.20 },
-                { name: 'Honda CR-V', clearance: 0.20 },
-                { name: 'Mazda CX-5', clearance: 0.21 },
-                { name: 'Nissan Rogue', clearance: 0.21 },
-                { name: 'Subaru Forester', clearance: 0.22 },
-                { name: 'Hyundai Tucson', clearance: 0.17 },
-                { name: 'Volkswagen Tiguan', clearance: 0.20 }
+            suv_compact: [
+                { name: 'Chevrolet Equinox', clearance: 0.193 },
+                { name: 'Ford Escape', clearance: 0.180 },
+                { name: 'Ford Bronco Sport', clearance: 0.203 },
+                { name: 'Honda CR-V', clearance: 0.1981 },
+                { name: 'Honda HR-V', clearance: 0.185 },
+                { name: 'Hyundai Kona', clearance: 0.17 },
+                { name: 'Hyundai Tucson', clearance: 0.211 },
+                { name: 'Kia Sportage', clearance: 0.2108 },
+                { name: 'Kia Seltos', clearance: 0.185 },
+                { name: 'Mazda CX-30', clearance: 0.203 },
+                { name: 'Mazda CX-5', clearance: 0.193 },
+                { name: 'Mazda CX-50', clearance: 0.218 },
+                { name: 'Nissan Rogue', clearance: 0.211 },
+                { name: 'Subaru Crosstrek', clearance: 0.220 },
+                { name: 'Subaru Forester', clearance: 0.221 },
+                { name: 'Tesla Model Y', clearance: 0.167 },
+                { name: 'Toyota Corolla Cross', clearance: 0.208 },
+                { name: 'Toyota RAV4', clearance: 0.213 },
+                { name: 'Volkswagen Taos', clearance: 0.208 },
+                { name: 'Volkswagen Tiguan', clearance: 0.201 }
             ],
-            large: [
-                { name: 'Toyota Land Cruiser', clearance: 0.23 },
-                { name: 'Chevrolet Tahoe', clearance: 0.20 },
-                { name: 'Ford Explorer', clearance: 0.22 },
-                { name: 'GMC Yukon', clearance: 0.20 },
-                { name: 'Toyota 4Runner', clearance: 0.23 },
-                { name: 'Nissan Patrol', clearance: 0.27 },
-                { name: 'Land Rover Discovery', clearance: 0.28 }
+            suv_midsize: [
+                { name: 'Audi Q5', clearance: 0.208 },
+                { name: 'Audi Q7', clearance: 0.211 },
+                { name: 'Acura MDX', clearance: 0.185 },
+                { name: 'BMW X3', clearance: 0.203 },
+                { name: 'BMW X5', clearance: 0.221 },
+                { name: 'Buick Enclave', clearance: 0.203 },
+                { name: 'Chevrolet Suburban', clearance: 0.254 },
+                { name: 'Chevrolet Tahoe', clearance: 0.203 },
+                { name: 'Ford Explorer', clearance: 0.211 },
+                { name: 'Genesis GV70', clearance: 0.185 },
+                { name: 'Genesis GV80', clearance: 0.203 },
+                { name: 'Honda Passport', clearance: 0.206 },
+                { name: 'Honda Pilot', clearance: 0.185 },
+                { name: 'Hyundai IONIQ 5', clearance: 0.160 },
+                { name: 'Hyundai Santa Fe', clearance: 0.208 },
+                { name: 'Jeep Grand Cherokee', clearance: 0.2184 },
+                { name: 'Kia EV6', clearance: 0.160 },
+                { name: 'Kia Sorento', clearance: 0.208 },
+                { name: 'Kia Telluride', clearance: 0.203 },
+                { name: 'Lexus RX', clearance: 0.208 },
+                { name: 'Mazda CX-90', clearance: 0.211 },
+                { name: 'Mercedes-Benz GLC', clearance: 0.150 },
+                { name: 'Mercedes-Benz GLE', clearance: 0.180 },
+                { name: 'Nissan Pathfinder', clearance: 0.178 },
+                { name: 'Toyota 4Runner', clearance: 0.244 },
+                { name: 'Toyota Highlander', clearance: 0.203 },
+                { name: 'Volkswagen Atlas', clearance: 0.203 }
+            ],
+            pickup: [
+                { name: 'Chevrolet Colorado', clearance: 0.211 },
+                { name: 'Chevrolet Colorado ZR2', clearance: 0.254 },
+                { name: 'Chevrolet Silverado 1500', clearance: 0.206 },
+                { name: 'Chevrolet Silverado Trail Boss', clearance: 0.277 },
+                { name: 'Ford F-150', clearance: 0.224 },
+                { name: 'Ford F-150 Raptor', clearance: 0.305 },
+                { name: 'Ford Ranger', clearance: 0.226 },
+                { name: 'Ford Super Duty (F-250/F-350)', clearance: 0.2159 },
+                { name: 'GMC Canyon', clearance: 0.211 },
+                { name: 'GMC Sierra 1500', clearance: 0.206 },
+                { name: 'GMC Sierra AT4', clearance: 0.259 },
+                { name: 'Honda Ridgeline', clearance: 0.193 },
+                { name: 'Jeep Gladiator', clearance: 0.254 },
+                { name: 'Nissan Frontier', clearance: 0.226 },
+                { name: 'Nissan Titan', clearance: 0.249 },
+                { name: 'Ram 1500', clearance: 0.221 },
+                { name: 'Ram 2500', clearance: 0.231 },
+                { name: 'Ram 1500 Rebel', clearance: 0.262 },
+                { name: 'Ram 2500 Power Wagon', clearance: 0.366 },
+                { name: 'Rivian R1T', clearance: 0.38 },
+                { name: 'Toyota Tacoma', clearance: 0.239 },
+                { name: 'Toyota Tundra', clearance: 0.269 }
             ],
             '4wd': [
-                { name: 'Jeep Wrangler', clearance: 0.27 },
-                { name: 'Toyota Tacoma', clearance: 0.24 },
-                { name: 'Ford F-150 Raptor', clearance: 0.30 },
-                { name: 'Chevrolet Colorado', clearance: 0.22 },
-                { name: 'Ram 1500', clearance: 0.25 },
-                { name: 'Ford Bronco', clearance: 0.29 },
-                { name: 'Land Rover Defender', clearance: 0.29 }
+                { name: 'Ford Bronco', clearance: 0.295 },
+                { name: 'Ford Bronco Raptor', clearance: 0.332 },
+                { name: 'Ford F-150 Raptor', clearance: 0.333 },
+                { name: 'GMC Sierra AT4', clearance: 0.274 },
+                { name: 'Jeep Wrangler', clearance: 0.274 },
+                { name: 'Land Rover Defender', clearance: 0.292 },
+                { name: 'Nissan Frontier PRO-4X', clearance: 0.249 },
+                { name: 'Tesla Cybertruck', clearance: 0.400 },
+                { name: 'Toyota 4Runner TRD Pro', clearance: 0.264 },
+                { name: 'Toyota Land Cruiser', clearance: 0.226 }
+            ],
+            van_fullsize: [
+                { name: 'Ford Transit', clearance: 0.152 },
+                { name: 'Chevrolet Express', clearance: 0.2057 },
+                { name: 'Mercedes-Benz Sprinter', clearance: 0.175 }
+            ],
+            van_compact: [
+                { name: 'Ford Transit Connect', clearance: 0.145 },
+                { name: 'Mercedes-Benz Metris', clearance: 0.137 },
+                { name: 'Ram ProMaster City', clearance: 0.140 }
+            ],
+            minivan: [
+                { name: 'Honda Odyssey', clearance: 0.1143 },
+                { name: 'Toyota Sienna', clearance: 0.1626 }
+            ],
+            bus: [
+                { name: 'New Flyer Xcelsior', clearance: 0.356 },
+                { name: 'Gillig Low Floor', clearance: 0.338 },
+                { name: 'Nova Bus LFS', clearance: 0.330 },
+                { name: 'Prevost H3-45', clearance: 0.318 },
+                { name: 'MCI J4500', clearance: 0.320 },
+                { name: 'Van Hool CX35', clearance: 0.315 }
             ]
         };
         // State management
