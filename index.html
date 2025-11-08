@@ -528,6 +528,7 @@
                             <label for="carCategory">Vehicle Category</label>
                             <select id="carCategory">
                                 <option value="none">-- Select Category --</option>
+                                <option value="general">General Categories (Max Safe Depths)</option>
                                 <option value="sedan">Sedan/Compact</option>
                                 <option value="suv_compact">SUV (Compact)</option>
                                 <option value="suv_midsize">SUV (Midsize/Luxury)</option>
@@ -665,6 +666,14 @@
         };
         // Car models database organized by category
         const carDatabase = {
+            general: [
+                { name: 'Sedan/Compact, Minivan', clearance: 0.119 },
+                { name: 'SUV (Compact)', clearance: 0.155 },
+                { name: 'SUV (Midsize/Luxury)', clearance: 0.178 },
+                { name: 'Bus (City/Coach)', clearance: 0.249 },
+                { name: 'Pickup Truck (Fullsize)', clearance: 0.266 },
+                { name: '4WD', clearance: 0.28 }
+            ],
             sedan: [
                 { name: 'Audi A4', clearance: 0.122 },
                 { name: 'Audi A6', clearance: 0.124 },
