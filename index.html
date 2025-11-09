@@ -279,6 +279,106 @@
             color: #2d3748;
             margin-bottom: 2px;
         }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .modal-header h2 {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        .modal-header p {
+            font-size: 0.9em;
+            color: #718096;
+        }
+        .modal-body {
+            color: #4a5568;
+            font-size: 0.85em;
+            line-height: 1.8;
+        }
+        .modal-body h3 {
+            color: #2d3748;
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .modal-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+        .modal-body strong {
+            color: #2d3748;
+        }
+        .modal-button {
+            width: 100%;
+            padding: 12px 24px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-button:hover {
+            background: #2d3748;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 85, 104, 0.3);
+        }
+        .modal-button:active {
+            transform: translateY(0);
+        }
+
         /* Responsive Design */
         @media (max-width: 1400px) {
             .main-layout {
@@ -348,6 +448,42 @@
     </style>
 </head>
 <body>
+    <!-- Instruction Modal -->
+    <div id="instructionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🌊 Welcome to the Road Closure Analysis Dashboard</h2>
+                <p>Learn how to use this tool effectively</p>
+            </div>
+            <div class="modal-body">
+                <h3>📋 How to Use</h3>
+                <ul>
+                    <li><strong>Set Flood Conditions:</strong> Enter the observed or modeled water depth (m) and flow velocity (m/s).</li>
+                    <li><strong>Select Vehicle Type (Optional):</strong> Choose from the available vehicle categories or specific vehicle models to apply clearance-based stability thresholds.</li>
+                    <li><strong>Enable/Disable Guideline Overlays:</strong> Turn on or off reference safety thresholds based on AR&R, Austroads, and NWS standards.</li>
+                </ul>
+
+                <h3>📊 Interpret the Result</h3>
+                <ul>
+                    <li>The plotted point represents your current flood condition.</li>
+                    <li>The background color indicates the associated hazard level.</li>
+                    <li>The status panel provides vehicle-specific stability and safety interpretation.</li>
+                </ul>
+
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 4px; margin-top: 15px;">
+                    <strong style="color: #856404;">⚠️ Safety Notice:</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #856404;">
+                        This tool is for research and planning purposes only. Always exercise extreme caution in flood conditions and follow official emergency guidance.
+                    </p>
+                </div>
+
+                <button class="modal-button" onclick="closeInstructionModal()">
+                    Got It - Let's Get Started!
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1> Closure Criteria for Coastal Roadways under Flooding Conditions</h1>
@@ -375,7 +511,22 @@
                             <label for="velocityInput">Water Velocity (m/s)</label>
                             <input type="number" id="velocityInput" value="1.0" step="0.1" min="0" max="4" placeholder="Enter velocity...">
                         </div>
-                        <div id="statusIndicator" class="status-indicator"></div>
+
+                        <!-- Zone-Based Assessment Card -->
+                        <div style="margin-top: 12px;">
+                            <div style="font-size: 0.5em; font-weight: 600; color: #4a5568; margin-bottom: 4px;">
+                                📊 General Hazard Zone Assessment
+                            </div>
+                            <div id="zoneIndicator" class="status-indicator"></div>
+                        </div>
+
+                        <!-- Vehicle-Specific Assessment Card (only shows when car selected) -->
+                        <div id="vehicleAssessmentCard" style="margin-top: 12px; display: none;">
+                            <div style="font-size: 0.5em; font-weight: 600; color: #4a5568; margin-bottom: 4px;">
+                                🚗 Vehicle-Specific Assessment
+                            </div>
+                            <div id="vehicleIndicator" class="status-indicator"></div>
+                        </div>
                     </div>
 
                     <!-- Vehicle Selection Card -->
@@ -388,6 +539,7 @@
                             <label for="carCategory">Vehicle Category</label>
                             <select id="carCategory">
                                 <option value="none">-- Select Category --</option>
+                                <option value="general">General Categories (Max Safe Depths)</option>
                                 <option value="sedan">Sedan/Compact</option>
                                 <option value="suv_compact">SUV (Compact)</option>
                                 <option value="suv_midsize">SUV (Midsize/Luxury)</option>
@@ -504,6 +656,11 @@
         </div>
     </div>
     <script>
+        // Function to close instruction modal
+        function closeInstructionModal() {
+            const modal = document.getElementById('instructionModal');
+            modal.classList.add('hidden');
+        }
         // Data from CSV files representing safety zone boundaries
         const lowData = {
             x: [0, 0.58667, 0.96381],
@@ -519,6 +676,14 @@
         };
         // Car models database organized by category
         const carDatabase = {
+            general: [
+                { name: 'Sedan/Compact, Minivan', clearance: 0.119 },
+                { name: 'SUV (Compact)', clearance: 0.155 },
+                { name: 'SUV (Midsize/Luxury)', clearance: 0.178 },
+                { name: 'Bus (City/Coach)', clearance: 0.249 },
+                { name: 'Pickup Truck (Fullsize)', clearance: 0.266 },
+                { name: '4WD', clearance: 0.28 }
+            ],
             sedan: [
                 { name: 'Audi A4', clearance: 0.122 },
                 { name: 'Audi A6', clearance: 0.124 },
@@ -657,7 +822,7 @@
             ]
         };
         // State management
-        let currentDepth = 0.2;
+        let currentDepth = 0.13;
         let currentVelocity = 1.0;
         let selectedCar = null;
         // Initialize
@@ -733,33 +898,78 @@
                 return { zone: 'low', reason: 'safe' };
             }
         }
+
         function updateStatusIndicator() {
-            const indicator = document.getElementById('statusIndicator');
+            const zoneIndicator = document.getElementById('zoneIndicator');
+            const vehicleIndicator = document.getElementById('vehicleIndicator');
+            const vehicleCard = document.getElementById('vehicleAssessmentCard');
+
             const dv = currentDepth * currentVelocity;
             const safetyAssessment = getSafetyZone(currentDepth, currentVelocity);
             const safetyZone = safetyAssessment.zone;
-            const zoneReason = safetyAssessment.reason;
-            let status, className, message, details;
-            // Check if a specific car is selected
+
+            // ========== PART 1: ZONE-BASED ASSESSMENT (Always shown) ==========
+            let zoneStatus, zoneClassName, zoneMessage, zoneDetails;
+
+            if (safetyZone === 'extreme') {
+                zoneStatus = 'Extreme Hazard Zone';
+                zoneClassName = 'status-danger';
+                zoneMessage = '⛔ CRITICAL - Turn around, don\'t drown!';
+                zoneDetails = `D×V = ${dv.toFixed(2)} m²/s. Fatal risk for all vehicles.`;
+            } else if (safetyZone === 'high') {
+                zoneStatus = 'High Hazard Zone';
+                zoneClassName = 'status-danger';
+                zoneMessage = '⛔ Do not attempt crossing';
+                zoneDetails = `D×V = ${dv.toFixed(2)} m²/s. Dangerous for most vehicles.`;
+            } else if (safetyZone === 'medium') {
+                zoneStatus = 'Medium Hazard Zone';
+                zoneClassName = 'status-caution';
+                zoneMessage = '⚠️ Proceed with extreme caution';
+                zoneDetails = `D×V = ${dv.toFixed(2)} m²/s. Velocity creates instability risk.`;
+            } else {
+                zoneStatus = 'Low Hazard Zone';
+                zoneClassName = 'status-safe';
+                zoneMessage = '✓ Relatively safe conditions';
+                zoneDetails = `D×V = ${dv.toFixed(2)} m²/s. Always drive slowly through water.`;
+            }
+
+            zoneIndicator.className = `status-indicator ${zoneClassName}`;
+            zoneIndicator.innerHTML = `
+                <strong style="font-size: 0.85em;">${zoneStatus}</strong><br>
+                ${zoneMessage}<br>
+                <small style="font-size: 0.75em; margin-top: 5px; display: block;">${zoneDetails}</small>
+            `;
+
+            // ========== PART 2: VEHICLE-SPECIFIC ASSESSMENT (Only if car selected) ==========
             if (selectedCar) {
+                vehicleCard.style.display = 'block';
+
                 const carName = selectedCar.name;
                 const carClearance = selectedCar.clearance;
-                // CRITICAL: Check if current depth exceeds vehicle clearance
+                const clearanceUsed = currentDepth;
+                const clearanceRemaining = carClearance - currentDepth;
+                const clearanceUsedPercent = (clearanceUsed / carClearance * 100).toFixed(0);
+                const clearanceRemainingPercent = (clearanceRemaining / carClearance * 100).toFixed(0);
+
+                let vStatus, vClassName, vMessage, vDetails;
+
+                // CRITICAL: Depth exceeds clearance
                 if (currentDepth >= carClearance) {
-                    status = 'CRITICAL DANGER';
-                    className = 'status-danger';
-                    message = `⛔ DO NOT PROCEED - Water depth (${currentDepth.toFixed(3)}m) exceeds ${carName} clearance (${carClearance}m)!`;
-                    details = 'Your vehicle will be submerged. Turn around immediately!';
-                } else {
-                    // Check against appropriate AR&R threshold based on vehicle type
+                    vStatus = '⛔ VEHICLE WILL BE SUBMERGED';
+                    vClassName = 'status-danger';
+                    vMessage = `DO NOT PROCEED - Water depth exceeds ${carName} clearance!`;
+                    vDetails = `Clearance: ${carClearance.toFixed(3)}m. Current depth: ${currentDepth.toFixed(3)}m. Turn around immediately!`;
+                }
+                // Check against AR&R thresholds
+                else {
                     const vehicleName = carName.toLowerCase();
                     let thresholdExceeded = false;
                     let thresholdName = '';
-                    // Determine which AR&R line to check against
+
+                    // Determine which AR&R line to check
                     if (vehicleName.includes('4wd') || vehicleName.includes('wrangler') ||
                         vehicleName.includes('raptor') || vehicleName.includes('bronco') ||
                         vehicleName.includes('defender') || carClearance >= 0.25) {
-                        // Check against AR&R 4WD threshold
                         const arr4WD_v = [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3];
                         const arr4WD_d = [0.5, 0.5, 0.5, 0.463213, 0.447715, 0.430538, 0.407125, 0.386115, 0.370183, 0.360046, 0.347746, 0.33183, 0.31376, 0.300764, 0.2];
                         thresholdExceeded = isAboveThreshold(currentVelocity, currentDepth, arr4WD_v, arr4WD_d);
@@ -768,84 +978,58 @@
                                vehicleName.includes('explorer') || vehicleName.includes('yukon') ||
                                vehicleName.includes('patrol') || vehicleName.includes('discovery') ||
                                carClearance >= 0.20) {
-                        // Check against AR&R Large Car threshold
                         const arrL_v = [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3];
                         const arrL_d = [0.4, 0.4, 0.4, 0.363213, 0.347715, 0.330538, 0.307125, 0.286115, 0.270183, 0.260046, 0.247746, 0.23183, 0.21376, 0.200764, 0.1];
                         thresholdExceeded = isAboveThreshold(currentVelocity, currentDepth, arrL_v, arrL_d);
                         thresholdName = 'AR&R Large Car';
                     } else {
-                        // Check against AR&R Small Car threshold
                         const arrS_v = [0, 1, 1, 1.15156, 1.22708, 1.31014, 1.46494, 1.63484, 1.79342, 1.90291, 2.08037, 2.31446, 2.66559, 3, 3];
                         const arrS_d = [0.3, 0.3, 0.3, 0.263213, 0.247715, 0.230538, 0.207125, 0.186115, 0.170183, 0.160046, 0.147746, 0.13183, 0.11376, 0.100764, 0];
                         thresholdExceeded = isAboveThreshold(currentVelocity, currentDepth, arrS_v, arrS_d);
                         thresholdName = 'AR&R Small Car';
                     }
-                    // Now combine threshold check with safety zone assessment
-                    // Priority: AR&R threshold > Safety zone > Clearance check
+
+                    // AR&R threshold exceeded
                     if (thresholdExceeded) {
-                        status = 'UNSAFE';
-                        className = 'status-danger';
-                        message = `⚠️ UNSAFE for ${carName}`;
-                        details = `Conditions exceed ${thresholdName} safety threshold. Vehicle instability likely. Do not attempt crossing.`;
-                    } else if (safetyZone === 'extreme') {
-                        // In extreme hazard zone even if below clearance and threshold
-                        status = 'EXTREME DANGER';
-                        className = 'status-danger';
-                        message = `⛔ EXTREME DANGER for ${carName}`;
-                        details = `Position in extreme hazard zone (red). Depth ${currentDepth.toFixed(2)}m with velocity ${currentVelocity.toFixed(1)}m/s creates critical risk. Turn around immediately!`;
-                    } else if (safetyZone === 'high') {
-                        // In high caution zone (orange)
-                        status = 'HIGH RISK';
-                        className = 'status-danger';
-                        message = `⚠️ HIGH RISK for ${carName}`;
-                        details = `Position in high caution zone. Depth ${currentDepth.toFixed(2)}m with velocity ${currentVelocity.toFixed(1)}m/s creates dangerous conditions. Avoid crossing.`;
-                    } else if (safetyZone === 'medium') {
-                        // In medium caution zone (yellow)
-                        const clearanceMargin = ((carClearance - currentDepth) / carClearance * 100).toFixed(0);
-                        status = 'MODERATE RISK';
-                        className = 'status-caution';
-                        message = `⚠️ MODERATE RISK for ${carName}`;
-                        details = `Position in medium caution zone. Depth ${currentDepth.toFixed(2)}m (${clearanceMargin}% clearance margin) with velocity ${currentVelocity.toFixed(1)}m/s. Proceed with extreme caution if necessary.`;
-                    } else {
-                        // In low risk zone (green)
-                        const clearanceMargin = ((carClearance - currentDepth) / carClearance * 100).toFixed(0);
-                        status = 'RELATIVELY SAFE';
-                        className = 'status-safe';
-                        message = `✓ Relatively safe for ${carName}`;
-                        details = `Position in low risk zone. Depth ${currentDepth.toFixed(2)}m (${clearanceMargin}% clearance margin), velocity ${currentVelocity.toFixed(1)}m/s, D×V = ${dv.toFixed(2)}. Still proceed with caution.`;
+                        vStatus = '⚠️ UNSAFE FOR THIS VEHICLE';
+                        vClassName = 'status-danger';
+                        vMessage = `Exceeds ${thresholdName} safety threshold`;
+                        vDetails = `Clearance: ${clearanceRemaining.toFixed(3)}m remaining (${clearanceRemainingPercent}% available). D×V = ${dv.toFixed(2)} m²/s. Vehicle instability likely.`;
+                    }
+                    // Low clearance remaining (<20%)
+                    else if (clearanceRemainingPercent < 20) {
+                        vStatus = '⚠️ APPROACHING CLEARANCE LIMIT';
+                        vClassName = 'status-danger';
+                        vMessage = `Only ${clearanceRemaining.toFixed(3)}m clearance remaining`;
+                        vDetails = `Clearance: ${clearanceUsed.toFixed(3)}m used, ${clearanceRemaining.toFixed(3)}m remaining (${clearanceRemainingPercent}% available). D×V = ${dv.toFixed(2)} m²/s. High caution required.`;
+                    }
+                    // Moderate clearance (20-40%)
+                    else if (clearanceRemainingPercent < 40) {
+                        vStatus = '⚠️ MODERATE CAUTION';
+                        vClassName = 'status-caution';
+                        vMessage = `${clearanceRemaining.toFixed(3)}m clearance remaining for ${carName}`;
+                        vDetails = `Clearance: ${clearanceUsed.toFixed(3)}m used, ${clearanceRemaining.toFixed(3)}m remaining (${clearanceRemainingPercent}% available). D×V = ${dv.toFixed(2)} m²/s. Proceed with caution.`;
+                    }
+                    // Good clearance (>40%)
+                    else {
+                        vStatus = '✓ ADEQUATE CLEARANCE';
+                        vClassName = 'status-safe';
+                        vMessage = `${clearanceRemaining.toFixed(3)}m clearance remaining for ${carName}`;
+                        vDetails = `Clearance: ${clearanceUsed.toFixed(3)}m used, ${clearanceRemaining.toFixed(3)}m remaining (${clearanceRemainingPercent}% available). D×V = ${dv.toFixed(2)} m²/s. Normal caution advised.`;
                     }
                 }
+
+                vehicleIndicator.className = `status-indicator ${vClassName}`;
+                vehicleIndicator.innerHTML = `
+                    <strong style="font-size: 0.95em;">${vStatus}</strong><br>
+                    ${vMessage}<br>
+                    <small style="font-size: 0.75em; margin-top: 5px; display: block;">${vDetails}</small>
+                `;
             } else {
-                // No car selected - general assessment based on depth, velocity, and safety zones
-                if (safetyZone === 'extreme') {
-                    status = 'Extreme Danger';
-                    className = 'status-danger';
-                    message = '⛔ CRITICAL - Turn around, don\'t drown!';
-                    details = `Position in extreme hazard zone (red). D×V = ${dv.toFixed(2)}. Fatal risk for all vehicles.`;
-                } else if (safetyZone === 'high') {
-                    status = 'High Hazard';
-                    className = 'status-danger';
-                    message = '⛔ Do not attempt crossing';
-                    details = `Position in high caution zone (orange). D×V = ${dv.toFixed(2)}. Dangerous for most vehicles.`;
-                } else if (safetyZone === 'medium') {
-                    status = 'Moderate Risk';
-                    className = 'status-caution';
-                    message = '⚠️ Proceed with extreme caution';
-                    details = `Position in medium caution zone (yellow). D×V = ${dv.toFixed(2)}. Velocity creates instability risk.`;
-                } else {
-                    status = 'Low Risk';
-                    className = 'status-safe';
-                    message = '✓ Relatively safe conditions';
-                    details = `Position in low risk zone (green). D×V = ${dv.toFixed(2)}. Always drive slowly through water.`;
-                }
+                vehicleCard.style.display = 'none';
             }
-            indicator.className = `status-indicator ${className}`;
-            indicator.innerHTML = `
-                <strong style="font-size: 1em;">${status}</strong><br>
-                ${message}<br>
-                <small style="font-size: 0.8em; margin-top: 5px; display: block;">${details}</small>
-            `;
         }
+
         // Helper function to check if a point is above a threshold curve
         function isAboveThreshold(velocity, depth, thresholdV, thresholdD) {
             // Linear interpolation to find threshold depth at current velocity
